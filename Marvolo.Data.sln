@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marvolo.Data", "Marvolo.Data\Marvolo.Data.csproj", "{C16382FE-9D86-425E-933F-8E4EE4AD20A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marvolo.Data", "Marvolo.Data\Marvolo.Data.csproj", "{C16382FE-9D86-425E-933F-8E4EE4AD20A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marvolo.Data.Sync", "Marvolo.Data.Sync\Marvolo.Data.Sync.csproj", "{FE14B7FD-6BC6-44C7-BF64-005014C6B0D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marvolo", "Marvolo\Marvolo.csproj", "{17B4029B-45BD-4B6F-BCFF-119A8EF97775}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{C16382FE-9D86-425E-933F-8E4EE4AD20A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C16382FE-9D86-425E-933F-8E4EE4AD20A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C16382FE-9D86-425E-933F-8E4EE4AD20A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE14B7FD-6BC6-44C7-BF64-005014C6B0D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE14B7FD-6BC6-44C7-BF64-005014C6B0D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE14B7FD-6BC6-44C7-BF64-005014C6B0D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE14B7FD-6BC6-44C7-BF64-005014C6B0D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17B4029B-45BD-4B6F-BCFF-119A8EF97775}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17B4029B-45BD-4B6F-BCFF-119A8EF97775}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17B4029B-45BD-4B6F-BCFF-119A8EF97775}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17B4029B-45BD-4B6F-BCFF-119A8EF97775}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

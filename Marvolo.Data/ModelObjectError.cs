@@ -5,10 +5,6 @@ namespace Marvolo.Data
     /// </summary>
     public class ModelObjectError
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="message"></param>
         public ModelObjectError(string message)
             : this(string.Empty, message)
         {

@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Marvolo.Data.Threading
+namespace Marvolo.Threading
 {
     /// <summary>
     /// 

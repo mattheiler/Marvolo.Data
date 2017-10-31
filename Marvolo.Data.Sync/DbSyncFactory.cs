@@ -1,5 +1,5 @@
 using System.Data.Entity;
-using Marvolo.Data.Extensions;
+using System.Data.Entity.Infrastructure;
 
 namespace Marvolo.Data.Sync
 {
@@ -17,11 +17,14 @@ namespace Marvolo.Data.Sync
         /// <returns></returns>
         public DbSync Create(DbContext source, DbContext target, EntityState state = EntityState.Added | EntityState.Deleted | EntityState.Modified)
         {
-            var builder = new DbSyncBuilder(source, target);
+            var sourceContext = (source as IObjectContextAdapter).ObjectContext;
+            var targetContext = (target as IObjectContextAdapter).ObjectContext;
+
+            var builder = new DbSyncBuilder(sourceContext, targetContext);
 
             source.ChangeTracker.DetectChanges(); // force change detection before evaluating
 
-            var entries = source.GetObjectContext().ObjectStateManager.GetObjectStateEntries(state);
+            var entries = sourceContext.ObjectStateManager.GetObjectStateEntries(state);
 
             foreach (var entry in entries)
                 builder.Add(entry);

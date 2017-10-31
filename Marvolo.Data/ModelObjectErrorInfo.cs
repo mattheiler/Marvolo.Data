@@ -14,8 +14,14 @@ namespace Marvolo.Data
 
         public void Add(ModelObjectError error)
         {
-            if (_errors.TryGetValue(error.PropertyName, out var entry)) entry.Add(error);
-            else _errors.Add(error.PropertyName, new List<ModelObjectError> { error });
+            if (_errors.TryGetValue(error.PropertyName, out var entry))
+            {
+                entry.Add(error);
+            }
+            else
+            {
+                _errors.Add(error.PropertyName, new List<ModelObjectError> { error });
+            }
 
             OnErrorsChanged(error.PropertyName);
         }
@@ -24,8 +30,14 @@ namespace Marvolo.Data
         {
             foreach (var grouping in errors.GroupBy(error => error.PropertyName))
             {
-                if (_errors.TryGetValue(grouping.Key, out var entry)) entry.AddRange(grouping);
-                else _errors.Add(grouping.Key, grouping.ToList());
+                if (_errors.TryGetValue(grouping.Key, out var entry))
+                {
+                    entry.AddRange(grouping);
+                }
+                else
+                {
+                    _errors.Add(grouping.Key, grouping.ToList());
+                }
 
                 OnErrorsChanged(grouping.Key);
             }

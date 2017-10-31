@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
-using Marvolo.Data.Extensions;
 
 namespace Marvolo.Data.Sync
 {
@@ -13,7 +13,7 @@ namespace Marvolo.Data.Sync
     {
         private readonly HashSet<DbSyncEntry> _added = new HashSet<DbSyncEntry>();
 
-        private readonly DbContext _context;
+        private readonly ObjectContext _context;
 
         private readonly HashSet<DbSyncEntry> _deleted = new HashSet<DbSyncEntry>();
 
@@ -25,11 +25,12 @@ namespace Marvolo.Data.Sync
         /// </summary>
         /// <param name="context"></param>
         /// <param name="entries"></param>
-        internal DbSync(DbContext context, IEnumerable<DbSyncEntry> entries)
+        internal DbSync(IObjectContextAdapter context, IEnumerable<DbSyncEntry> entries)
         {
-            _context = context;
+            _context = context.ObjectContext;
 
             foreach (var entry in entries)
+            {
                 switch (entry.SourceState)
                 {
                     case EntityState.Added:
@@ -45,6 +46,7 @@ namespace Marvolo.Data.Sync
                         _unchanged.Add(entry);
                         break;
                 }
+            }
         }
 
         /// <summary>
@@ -56,16 +58,24 @@ namespace Marvolo.Data.Sync
             var entries = Enumerable.Empty<DbSyncEntry>();
 
             if (state.HasFlag(EntityState.Added))
+            {
                 entries = entries.Concat(_added);
+            }
 
             if (state.HasFlag(EntityState.Deleted))
+            {
                 entries = entries.Concat(_deleted);
+            }
 
             if (state.HasFlag(EntityState.Modified))
+            {
                 entries = entries.Concat(_modified);
+            }
 
             if (state.HasFlag(EntityState.Unchanged))
+            {
                 entries = entries.Concat(_unchanged);
+            }
 
             return entries;
         }
@@ -79,7 +89,7 @@ namespace Marvolo.Data.Sync
             // attach those target entity that are marked as detached
 
             foreach (var entry in entries)
-                _context.GetObjectContext().AttachTo(entry.TargetEntityKey.EntitySetName, entry.TargetEntity);
+                _context.AttachTo(entry.TargetEntityKey.EntitySetName, entry.TargetEntity);
         }
 
         /// <summary>
@@ -87,7 +97,7 @@ namespace Marvolo.Data.Sync
         /// <param name="state"></param>
         public void Refresh(EntityState state)
         {
-            _context.GetObjectContext().Refresh(RefreshMode.StoreWins, GetEntries(state).Where(CanRefresh).Select(entry => entry.TargetEntity));
+            _context.Refresh(RefreshMode.StoreWins, GetEntries(state).Where(CanRefresh).Select(entry => entry.TargetEntity));
         }
 
         /// <summary>
@@ -96,7 +106,7 @@ namespace Marvolo.Data.Sync
         /// <returns></returns>
         public Task RefreshAsync(EntityState state)
         {
-            return _context.GetObjectContext().RefreshAsync(RefreshMode.StoreWins, GetEntries(state).Where(CanRefresh).Select(entry => entry.TargetEntity));
+            return _context.RefreshAsync(RefreshMode.StoreWins, GetEntries(state).Where(CanRefresh).Select(entry => entry.TargetEntity));
         }
 
         /// <summary>
@@ -104,9 +114,13 @@ namespace Marvolo.Data.Sync
         public void Flush()
         {
             foreach (var entry in GetEntries())
-                entry.TargetState = _context.GetObjectContext().ObjectStateManager.TryGetObjectStateEntry(entry.TargetEntityKey, out var current) ? current.State : EntityState.Detached;
+            {
+                entry.TargetState = _context.ObjectStateManager.TryGetObjectStateEntry(entry.TargetEntityKey, out var current) ? current.State : EntityState.Detached;
+            }
 
-            _context.GetObjectContext().DetectChanges(); // should this be done before? ...in-between?
+            // should this be done before? ...in-between?
+
+            _context.DetectChanges();
         }
 
         private static bool CanRefresh(DbSyncEntry entry)

@@ -5,8 +5,7 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Marvolo.Data.Extensions;
-using Marvolo.Data.Threading;
+using Marvolo.Threading;
 
 namespace Marvolo.Data
 {
@@ -89,7 +88,48 @@ namespace Marvolo.Data
 
         public void Undo()
         {
-            _context.GetObjectContext().RejectChanges();
+            var context = (_context as IObjectContextAdapter).ObjectContext;
+            var entries = context.ObjectStateManager.GetObjectStateEntries(EntityState.Added | EntityState.Deleted | EntityState.Modified).ToList();
+
+            foreach (var entry in entries)
+            {
+                if (entry.IsRelationship)
+                {
+                    switch (entry.State)
+                    {
+                        case EntityState.Added:
+                            entry.ChangeState(EntityState.Detached);
+                            break;
+                        case EntityState.Deleted:
+                            entry.ChangeState(EntityState.Unchanged);
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (entry.State)
+                    {
+                        case EntityState.Added:
+                            entry.ChangeState(EntityState.Detached);
+                            break;
+                        case EntityState.Deleted:
+                            entry.ChangeState(EntityState.Unchanged);
+                            break;
+                        case EntityState.Modified:
+
+                            var properties = entry.GetModifiedProperties().ToList();
+
+                            foreach (var property in properties)
+                            {
+                                entry.RejectPropertyChanges(property);
+                            }
+
+                            break;
+                    }
+                }
+            }
+
+            context.DetectChanges();
 
             // invalidate? if the pattern is to use backing fields and setters for property change notifications... no. use the strategy pattern? ...per entity? context?
 
@@ -107,16 +147,26 @@ namespace Marvolo.Data
         protected virtual void HandleDbUpdateException(DbUpdateException e)
         {
             foreach (var entry in e.Entries)
+            {
                 if (entry.Entity is IModelObject entity)
+                {
                     entity.ErrorInfo.Add(new ModelObjectError(e.Message)); // translator service? map to SQL error code from inner SQL exception?
+                }
+            }
         }
 
         protected virtual void HandleDbEntityValidationException(DbEntityValidationException e)
         {
             foreach (var result in e.EntityValidationErrors)
+            {
                 if (result.Entry.Entity is IModelObject entity)
+                {
                     foreach (var errors in result.ValidationErrors.GroupBy(error => error.PropertyName))
+                    {
                         entity.ErrorInfo.AddRange(errors.Select(error => new ModelObjectError(errors.Key, error.ErrorMessage)));
+                    }
+                }
+            }
         }
     }
 }

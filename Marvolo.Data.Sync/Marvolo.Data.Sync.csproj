@@ -5,10 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EntityFramework" Version="6.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\Marvolo.Data\Marvolo.Data.csproj" />
     <ProjectReference Include="..\Marvolo\Marvolo.csproj" />
   </ItemGroup>
 
