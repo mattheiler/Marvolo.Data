@@ -95,7 +95,7 @@ namespace Marvolo.Data.Sync
         /// <summary>
         /// </summary>
         /// <param name="state"></param>
-        public void Refresh(EntityState state)
+        public void Refresh(EntityState state = EntityState.Added | EntityState.Deleted | EntityState.Modified)
         {
             _context.Refresh(RefreshMode.StoreWins, GetEntries(state).Where(CanRefresh).Select(entry => entry.TargetEntity));
         }
@@ -104,7 +104,7 @@ namespace Marvolo.Data.Sync
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public Task RefreshAsync(EntityState state)
+        public Task RefreshAsync(EntityState state = EntityState.Added | EntityState.Deleted | EntityState.Modified)
         {
             return _context.RefreshAsync(RefreshMode.StoreWins, GetEntries(state).Where(CanRefresh).Select(entry => entry.TargetEntity));
         }
@@ -117,10 +117,6 @@ namespace Marvolo.Data.Sync
             {
                 entry.TargetState = _context.ObjectStateManager.TryGetObjectStateEntry(entry.TargetEntityKey, out var current) ? current.State : EntityState.Detached;
             }
-
-            // should this be done before? ...in-between?
-
-            _context.DetectChanges();
         }
 
         private static bool CanRefresh(DbSyncEntry entry)
