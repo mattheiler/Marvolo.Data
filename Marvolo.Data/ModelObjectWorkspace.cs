@@ -148,7 +148,7 @@ namespace Marvolo.Data
         {
             foreach (var entry in e.Entries)
             {
-                if (entry.Entity is IModelObject entity)
+                if (entry.Entity is ModelObject entity)
                 {
                     entity.ErrorInfo.Add(new ModelObjectError(e.Message)); // translator service? map to SQL error code from inner SQL exception?
                 }
@@ -159,7 +159,7 @@ namespace Marvolo.Data
         {
             foreach (var result in e.EntityValidationErrors)
             {
-                if (result.Entry.Entity is IModelObject entity)
+                if (result.Entry.Entity is ModelObject entity)
                 {
                     foreach (var errors in result.ValidationErrors.GroupBy(error => error.PropertyName))
                     {

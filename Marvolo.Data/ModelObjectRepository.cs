@@ -8,12 +8,12 @@ namespace Marvolo.Data
 {
     public class ModelObjectRepository<T> : IModelObjectRepository<T> where T : class
     {
-        public ModelObjectRepository(DbSet<T> set)
+        public ModelObjectRepository(IDbSet<T> set)
         {
             Set = set;
         }
 
-        public DbSet<T> Set { get; }
+        public IDbSet<T> Set { get; }
 
         public T Add(T item)
         {
@@ -27,18 +27,13 @@ namespace Marvolo.Data
 
         IList<T> IModelObjectRepository<T>.ToList()
         {
-            return ToList();
+            return Set.ToList();
         }
 
         public event NotifyCollectionChangedEventHandler CollectionChanged
         {
             add => Set.Local.CollectionChanged += value;
             remove => Set.Local.CollectionChanged -= value;
-        }
-
-        protected List<T> ToList()
-        {
-            return Set.ToList();
         }
 
         public int Count()

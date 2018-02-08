@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Marvolo.Data
 {
-    public class ModelObjectErrorInfo : IModelObjectErrorInfo
+    public class ModelObjectErrorInfo
     {
         private readonly Dictionary<string, List<ModelObjectError>> _errors = new Dictionary<string, List<ModelObjectError>>();
 
@@ -49,7 +49,10 @@ namespace Marvolo.Data
 
             _errors.Clear();
 
-            foreach (var property in properties) OnErrorsChanged(property);
+            foreach (var property in properties)
+            {
+                OnErrorsChanged(property);
+            }
         }
 
         public void Remove(string propertyName)

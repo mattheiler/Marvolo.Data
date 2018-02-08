@@ -485,7 +485,7 @@ namespace Marvolo.Data.Sync
 
         #region AssociationEndMember
 
-        public static NavigationProperty GetNavigationProperty(AssociationEndMember member)
+        private static NavigationProperty GetNavigationProperty(AssociationEndMember member)
         {
             return member.GetEntityType().NavigationProperties.SingleOrDefault(property => property.RelationshipType == member.DeclaringType && property.FromEndMember == member);
         }
@@ -494,7 +494,7 @@ namespace Marvolo.Data.Sync
 
         #region  EntityType
 
-        public static NavigationProperty GetNavigationProperty(EntityType type, EntityReference reference)
+      private static NavigationProperty GetNavigationProperty(EntityType type, EntityReference reference)
         {
             return type.NavigationProperties.SingleOrDefault(property => property.ToEndMember.Name == reference.TargetRoleName);
         }
@@ -503,7 +503,7 @@ namespace Marvolo.Data.Sync
 
         #region  EntityReference
 
-        public static NavigationProperty GetNavigationPropertyForTarget(EntityReference reference)
+        private static NavigationProperty GetNavigationPropertyForTarget(EntityReference reference)
         {
             var relationship = (AssociationSet) reference.RelationshipSet;
             var members = relationship.ElementType.AssociationEndMembers;
@@ -512,14 +512,14 @@ namespace Marvolo.Data.Sync
             return target.GetEntityType().NavigationProperties.SingleOrDefault(property => property.ToEndMember == source);
         }
 
-        public static bool IsSourceReference(EntityReference reference)
+        private static bool IsSourceReference(EntityReference reference)
         {
             var relationship = (AssociationSet) reference.RelationshipSet;
             var constraint = relationship.ElementType.Constraint;
             return constraint.ToRole.Name == reference.SourceRoleName;
         }
 
-        public static bool IsSourceReferenceChanged(ObjectStateEntry entry, EntityReference reference)
+        private static bool IsSourceReferenceChanged(ObjectStateEntry entry, EntityReference reference)
         {
             var relationship = (AssociationSet) reference.RelationshipSet;
 
@@ -534,13 +534,13 @@ namespace Marvolo.Data.Sync
 
         #region  ObjectStateEntry
 
-        public static EntityType GetEntityType(ObjectStateEntry entry)
+        private static EntityType GetEntityType(ObjectStateEntry entry)
         {
             var type = ObjectContext.GetObjectType(entry.Entity.GetType());
             return entry.ObjectStateManager.MetadataWorkspace.GetItem<EntityType>(type.FullName, DataSpace.OSpace);
         }
 
-        public static EntityKey GetEntityTypeKeyOriginalValue(ObjectStateEntry entry, EntityReference reference)
+        private static EntityKey GetEntityTypeKeyOriginalValue(ObjectStateEntry entry, EntityReference reference)
         {
             switch (entry.State)
             {
@@ -573,7 +573,7 @@ namespace Marvolo.Data.Sync
             return entry.ObjectStateManager.TryGetObjectStateEntry(value, out var target) ? target.EntityKey : null;
         }
 
-        public static IEnumerable<EntityReference> GetReferences(ObjectStateEntry entry)
+        private static IEnumerable<EntityReference> GetReferences(ObjectStateEntry entry)
         {
             return entry.RelationshipManager.GetAllRelatedEnds().OfType<EntityReference>();
         }

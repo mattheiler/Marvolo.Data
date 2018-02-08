@@ -5,22 +5,20 @@ using System.Runtime.CompilerServices;
 
 namespace Marvolo.Data
 {
-    public abstract class ModelObject : IModelObject
+    public abstract class ModelObject : INotifyPropertyChanged, INotifyPropertyChanging, INotifyDataErrorInfo
     {
         protected ModelObject()
         {
             ErrorInfo.Changed += (sender, e) => ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(e.PropertyName));
         }
 
-        protected ModelObjectErrorInfo ErrorInfo { get; } = new ModelObjectErrorInfo();
+        public ModelObjectErrorInfo ErrorInfo { get; } = new ModelObjectErrorInfo();
 
         event EventHandler<DataErrorsChangedEventArgs> INotifyDataErrorInfo.ErrorsChanged
         {
             add => ErrorsChanged += value;
             remove => ErrorsChanged -= value;
         }
-
-        IModelObjectErrorInfo IModelObject.ErrorInfo => ErrorInfo;
 
         public void Invalidate(string propertyName)
         {
